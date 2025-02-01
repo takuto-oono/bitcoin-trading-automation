@@ -1,7 +1,13 @@
 [url]
 bitFlyerAPI = "http://localhost:8001"
 slackNotification = "http://localhost:8002"
+redisServer = "http://localhost:8003"
 
 
 [bitFlyer]
 baseEndPoint = "https://api.bitflyer.com"
+
+[redis]
+address = "localhost:6379"
+indexCount = 2
+

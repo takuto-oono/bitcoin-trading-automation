@@ -12,11 +12,13 @@ type Config struct {
 	Url      Url      `toml:"url"`
 	BitFlyer BitFlyer `toml:"bitFlyer"`
 	Slack    Slack
+	Redis    Redis `toml:"redis"`
 }
 
 type Url struct {
 	BitFlyerAPI       string `toml:"bitFlyerAPI"`
 	SlackNotification string `toml:"slackNotification"`
+	RedisServer       string `toml:"redisServer"`
 }
 
 type BitFlyer struct {
@@ -27,6 +29,11 @@ type BitFlyer struct {
 
 type Slack struct {
 	AccessToken string
+}
+
+type Redis struct {
+	Address    string `toml:"address"`
+	IndexCount int    `toml:"indexCount"`
 }
 
 func NewConfig(tomlFilePath, envFilePath string) Config {
@@ -59,6 +66,9 @@ func (cfg Config) mustCheck() error {
 	if cfg.Url.SlackNotification == "" {
 		return errors.New("slackNotification is empty")
 	}
+	if cfg.Url.RedisServer == "" {
+		return errors.New("redisServer is empty")
+	}
 	if cfg.BitFlyer.ApiKey == "" {
 		return errors.New("apiKey is empty")
 	}
@@ -70,6 +80,12 @@ func (cfg Config) mustCheck() error {
 	}
 	if cfg.BitFlyer.BaseEndPoint == "" {
 		return errors.New("baseEndPoint is empty")
+	}
+	if cfg.Redis.Address == "" {
+		return errors.New("address is empty")
+	}
+	if cfg.Redis.IndexCount == 0 {
+		return errors.New("indexCount is empty")
 	}
 	return nil
 
