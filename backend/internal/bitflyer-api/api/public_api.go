@@ -18,9 +18,9 @@ type PublicAPI interface {
 // TODO アドレスを返すようにする
 func NewPublicAPI(cfg config.Config) PublicAPI {
 	return API{
-		BaseUrl:   BaseUrl(cfg.BitflyerConfig.BaseEndPoint),
-		ApiKey:    cfg.BitflyerConfig.ApiKey,
-		ApiSecret: cfg.BitflyerConfig.ApiSecret,
+		BaseUrl:   BaseUrl(cfg.BitFlyer.BaseEndPoint),
+		ApiKey:    cfg.BitFlyer.ApiKey,
+		ApiSecret: cfg.BitFlyer.ApiSecret,
 	}
 }
 

@@ -20,9 +20,9 @@ type PrivateAPI interface {
 
 func NewPrivateAPI(cfg config.Config) PrivateAPI {
 	return &API{
-		BaseUrl:   BaseUrl(cfg.BitflyerConfig.BaseEndPoint),
-		ApiKey:    cfg.BitflyerConfig.ApiKey,
-		ApiSecret: cfg.BitflyerConfig.ApiSecret,
+		BaseUrl:   BaseUrl(cfg.BitFlyer.BaseEndPoint),
+		ApiKey:    cfg.BitFlyer.ApiKey,
+		ApiSecret: cfg.BitFlyer.ApiSecret,
 	}
 }
 

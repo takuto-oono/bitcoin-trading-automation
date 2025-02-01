@@ -9,15 +9,15 @@ import (
 )
 
 type Config struct {
-	BaseConfig     BaseConfig     `toml:"baseConfig"`
-	BitflyerConfig BitFlyerConfig `toml:"bitFlyerConfig"`
+	Url      Url      `toml:"url"`
+	BitFlyer BitFlyer `toml:"bitFlyer"`
 }
 
-type BaseConfig struct {
-	Port string `toml:"port"`
+type Url struct {
+	BitFlyerAPI string `toml:"bitFlyerAPI"`
 }
 
-type BitFlyerConfig struct {
+type BitFlyer struct {
 	ApiKey       string
 	ApiSecret    string
 	BaseEndPoint string `toml:"baseEndPoint"`
@@ -34,8 +34,8 @@ func NewConfig(tomlFilePath, envFilePath string) Config {
 		panic(err)
 	}
 
-	config.BitflyerConfig.ApiKey = os.Getenv("API_KEY")
-	config.BitflyerConfig.ApiSecret = os.Getenv("API_SECRET")
+	config.BitFlyer.ApiKey = os.Getenv("BITFLYER_API_KEY")
+	config.BitFlyer.ApiSecret = os.Getenv("BITFLYER_API_SECRET")
 
 	if err := config.mustCheck(); err != nil {
 		panic(err)
@@ -45,16 +45,16 @@ func NewConfig(tomlFilePath, envFilePath string) Config {
 }
 
 func (cfg Config) mustCheck() error {
-	if cfg.BaseConfig.Port == "" {
+	if cfg.Url.BitFlyerAPI == "" {
 		return errors.New("port is empty")
 	}
-	if cfg.BitflyerConfig.ApiKey == "" {
+	if cfg.BitFlyer.ApiKey == "" {
 		return errors.New("apiKey is empty")
 	}
-	if cfg.BitflyerConfig.ApiSecret == "" {
+	if cfg.BitFlyer.ApiSecret == "" {
 		return errors.New("apiSecret is empty")
 	}
-	if cfg.BitflyerConfig.BaseEndPoint == "" {
+	if cfg.BitFlyer.BaseEndPoint == "" {
 		return errors.New("baseEndPoint is empty")
 	}
 	return nil

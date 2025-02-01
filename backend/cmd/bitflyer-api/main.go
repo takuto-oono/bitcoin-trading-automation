@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 
 	"github.com/bitcoin-trading-automation/internal/bitflyer-api/router"
 	"github.com/bitcoin-trading-automation/internal/config"
@@ -18,7 +19,12 @@ func main() {
 
 	r := router.NewRouter(cfg)
 
-	if err := r.Run(fmt.Sprintf(":%s", cfg.BaseConfig.Port)); err != nil {
+	u, err := url.Parse(cfg.Url.BitFlyerAPI)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := r.Run(fmt.Sprintf(":%s", u.Port())); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
 	}
 }

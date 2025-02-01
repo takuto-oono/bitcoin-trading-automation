@@ -1,5 +1,5 @@
-[baseConfig]
-port = "8001"
+[url]
+bitFlyerAPI = "http://localhost:8001"
 
-[bitFlyerConfig]
+[bitFlyer]
 baseEndPoint = "https://api.bitflyer.com"

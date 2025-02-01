@@ -22,9 +22,9 @@ func TestNewPublicAPI(t *testing.T) {
 			cfg: APITestConfig,
 		},
 		want: API{
-			BaseUrl:   BaseUrl(APITestConfig.BitflyerConfig.BaseEndPoint),
-			ApiKey:    APITestConfig.BitflyerConfig.ApiKey,
-			ApiSecret: APITestConfig.BitflyerConfig.ApiSecret,
+			BaseUrl:   BaseUrl(APITestConfig.BitFlyer.BaseEndPoint),
+			ApiKey:    APITestConfig.BitFlyer.ApiKey,
+			ApiSecret: APITestConfig.BitFlyer.ApiSecret,
 		},
 	}}
 	for _, tt := range tests {
