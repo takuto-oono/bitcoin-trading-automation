@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "BitFlyer-API",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${workspaceFolder}/backend/cmd/bitflyer-api/main.go",
+          "env": {},
+          "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
+          "showLog": true
+      },
+      {
+          "name": "Slack-Notification",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${workspaceFolder}/backend/cmd/slack-notification/main.go",
+          "env": {},
+          "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
+          "showLog": true
+      },
+      {
+          "name": "Redis-Server",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${workspaceFolder}/backend/cmd/redis-server/main.go",
+          "env": {},
+          "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
+          "showLog": true
+      }
+  ]
+}

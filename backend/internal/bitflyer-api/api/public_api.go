@@ -1,0 +1,87 @@
+package api
+
+import (
+	"net/http"
+
+	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
+	"github.com/bitcoin-trading-automation/internal/config"
+)
+
+type PublicAPI interface {
+	GetBoard(productCode string) (models.Board, error)
+	GetTicker(productCode string) (models.Ticket, error)
+	GetExecutions(productCode string, count, before, after string) ([]models.Execution, error)
+	GetBoardState(productCode string) (models.BoardStatus, error)
+	GetHealth(productCode string) (models.Health, error)
+}
+
+// TODO アドレスを返すようにする
+func NewPublicAPI(cfg config.Config) PublicAPI {
+	return API{
+		BaseUrl:   BaseUrl(cfg.BitFlyer.BaseEndPoint),
+		ApiKey:    cfg.BitFlyer.ApiKey,
+		ApiSecret: cfg.BitFlyer.ApiSecret,
+	}
+}
+
+// TODO レシーバーをアドレスにする
+func (api API) GetBoard(productCode string) (models.Board, error) {
+	url, err := api.BaseUrl.GetBoardUrl(productCode)
+	if err != nil {
+		return models.Board{}, err
+	}
+	resModel := models.Board{}
+	if err := api.do(http.MethodGet, nil, &resModel, url, nil, false); err != nil {
+		return models.Board{}, err
+
+	}
+	return resModel, nil
+}
+
+func (api API) GetTicker(productCode string) (models.Ticket, error) {
+	url, err := api.BaseUrl.GetTickerUrl(productCode)
+	if err != nil {
+		return models.Ticket{}, err
+	}
+	resModel := models.Ticket{}
+	if err := api.do(http.MethodGet, nil, &resModel, url, nil, false); err != nil {
+		return models.Ticket{}, err
+	}
+	return resModel, nil
+}
+
+func (api API) GetExecutions(productCode, count, before, after string) ([]models.Execution, error) {
+	url, err := api.BaseUrl.GetExecutionsUrl(productCode, count, before, after)
+	if err != nil {
+		return []models.Execution{}, err
+	}
+	var resModel []models.Execution
+	if err := api.do(http.MethodGet, nil, &resModel, url, nil, false); err != nil {
+		return []models.Execution{}, err
+	}
+	return resModel, nil
+}
+
+func (api API) GetBoardState(productCode string) (models.BoardStatus, error) {
+	url, err := api.BaseUrl.GetBoardStateUrl(productCode)
+	if err != nil {
+		return models.BoardStatus{}, err
+	}
+	resModel := models.BoardStatus{}
+	if err := api.do(http.MethodGet, nil, &resModel, url, nil, false); err != nil {
+		return models.BoardStatus{}, err
+	}
+	return resModel, nil
+}
+
+func (api API) GetHealth(productCode string) (models.Health, error) {
+	url, err := api.BaseUrl.GetHealthUrl(productCode)
+	if err != nil {
+		return models.Health{}, err
+	}
+	resModel := models.Health{}
+	if err := api.do(http.MethodGet, nil, &resModel, url, nil, false); err != nil {
+		return models.Health{}, err
+	}
+	return resModel, nil
+}

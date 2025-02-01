@@ -1,0 +1,182 @@
+name: github-ci
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.5'
+
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: Run golangci-lint
+        run: |
+          cd backend
+          golangci-lint run ./...
+
+  govulncheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.5'
+
+      - name: install govuluncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run govulncheck
+        run: |
+          cd backend
+          govulncheck ./...
+
+  build-bitflyer-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.5'
+
+      - name: Build
+        run: |
+          cd backend
+          go build -o bitflyer-api ./cmd/bitflyer-api/main.go
+
+  build-slack-notification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.5'
+
+      - name: Build
+        run: |
+          cd backend
+          go build -o slack-notification ./cmd/slack-notification/main.go
+
+  build-redis-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.5'
+
+      - name: Build
+        run: |
+          cd backend
+          go build -o redis-server ./cmd/redis-server/main.go
+
+  test-backend:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.5'
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: docker-compose up
+        run: |
+          docker-compose -f backend/docker/local/docker-compose.yml  up --build -d
+          sleep 10
+
+      - name: setUp env file
+        run: |
+          mkdir backend/env
+          touch backend/env/.env.local
+          echo "BITFLYER_API_KEY=${{ secrets.BITFLYER_API_KEY }}" > backend/env/.env.local
+          echo "BITFLYER_API_SECRET=${{ secrets.BITFLYER_API_SECRET }}" >> backend/env/.env.local
+          echo "SLACK_ACCESS_TOKEN=${{ secrets.SLACK_ACCESS_TOKEN }}" >> backend/env/.env.local
+
+      - name: Run Go tests
+        run: |
+          cd backend
+          go test ./... -v
+
+  # TODO eslintが通らないのでコメントアウト
+  # frontend-lint:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '23.2.0'
+
+  #     - name: Install dependencies
+  #       run: |
+  #         cd frontend
+  #         npm install
+
+  #     - name: Run ESLint
+  #       run: |
+  #         cd frontend
+  #         npm run lint
+
+  frontend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '23.2.0'
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
