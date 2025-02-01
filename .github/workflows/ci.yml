@@ -136,6 +136,29 @@ jobs:
           cd backend
           go test ./... -v
 
+  # TODO eslintが通らないのでコメントアウト
+  # frontend-lint:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '23.2.0'
+
+  #     - name: Install dependencies
+  #       run: |
+  #         cd frontend
+  #         npm install
+
+  #     - name: Run ESLint
+  #       run: |
+  #         cd frontend
+  #         npm run lint
+
   frontend-build:
     runs-on: ubuntu-latest
 
