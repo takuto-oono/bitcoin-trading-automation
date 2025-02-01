@@ -1,5 +1,7 @@
 [url]
 bitFlyerAPI = "http://localhost:8001"
+slackNotification = "http://localhost:8002"
+
 
 [bitFlyer]
 baseEndPoint = "https://api.bitflyer.com"

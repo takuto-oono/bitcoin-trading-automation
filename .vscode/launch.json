@@ -10,7 +10,16 @@
           "env": {},
           "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
           "showLog": true
+      },
+      {
+          "name": "Slack-Notification",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${workspaceFolder}/backend/cmd/slack-notification/main.go",
+          "env": {},
+          "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
+          "showLog": true
       }
   ]
 }
-
