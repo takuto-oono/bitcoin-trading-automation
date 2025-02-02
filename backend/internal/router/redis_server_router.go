@@ -7,7 +7,7 @@ import (
 	"github.com/bitcoin-trading-automation/internal/handler"
 )
 
-func NewRouter(cfg config.Config) (*gin.Engine, error) {
+func NewRedisServerRouter(cfg config.Config) (*gin.Engine, error) {
 	h, err := handler.NewRedisServerHandler(cfg)
 	if err != nil {
 		return nil, err
