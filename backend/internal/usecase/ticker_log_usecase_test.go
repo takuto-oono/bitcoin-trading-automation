@@ -14,7 +14,7 @@ import (
 var TestTickerLogUseCaseConfig config.Config
 
 func init() {
-	TestTickerLogUseCaseConfig = config.NewConfig("../../../toml/local.toml", "../../../env/.env.local")
+	TestTickerLogUseCaseConfig = config.NewConfig("../../toml/local.toml", "../../env/.env.local")
 }
 
 func TestTickerLog_GetTickerLogs(t *testing.T) {

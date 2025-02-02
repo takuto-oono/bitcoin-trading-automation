@@ -6,7 +6,7 @@ import (
 
 	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
-	"github.com/bitcoin-trading-automation/internal/ticker-log-server/usecase"
+	"github.com/bitcoin-trading-automation/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
