@@ -29,13 +29,13 @@ func TestMainFunction(t *testing.T) {
 		panic(err)
 	}
 
+	time.Sleep(3 * time.Second)
+
 	ticker := mysql.NewTicker(1, "BTC_JPY", "RUNNING", time.Now().Unix(), 1000000, 1000000, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1000000, 1000000, 1000000)
 
 	if err := ticker.Insert(m.DB); err != nil {
 		panic(err)
 	}
-
-	time.Sleep(1 * time.Second)
 
 	type args struct {
 		curl []string
