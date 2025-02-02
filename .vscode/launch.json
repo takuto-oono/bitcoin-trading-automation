@@ -30,6 +30,26 @@
           "env": {},
           "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
           "showLog": true
+      },
+      {
+          "name": "ticker-log-server",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${workspaceFolder}/backend/cmd/ticker-log-server/main.go",
+          "env": {},
+          "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
+          "showLog": true
+      },
+      {
+          "name": "ticker-log-batch",
+          "type": "go",
+          "request": "launch",
+          "mode": "auto",
+          "program": "${workspaceFolder}/backend/cmd/ticker-log-batch/main.go",
+          "env": {},
+          "args": ["-toml", "${workspaceFolder}/backend/toml/local.toml", "-env", "${workspaceFolder}/backend/env/.env.local"],
+          "showLog": true
       }
   ]
 }

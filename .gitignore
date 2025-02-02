@@ -28,6 +28,9 @@ main
 
 __debug_bin*
 
+backend/docker/local/db
+backend/docker/prod/db
+
 
 # dependencies
 node_modules

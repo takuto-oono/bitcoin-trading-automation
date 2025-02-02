@@ -2,6 +2,7 @@
 bitFlyerAPI = "http://localhost:8001"
 slackNotification = "http://localhost:8002"
 redisServer = "http://localhost:8003"
+tickerLogServer = "http://localhost:8004"
 
 
 [bitFlyer]
@@ -11,3 +12,9 @@ baseEndPoint = "https://api.bitflyer.com"
 address = "localhost:6379"
 indexCount = 2
 
+[mysql]
+user = "myuser"
+password = "mypass"
+host = "127.0.0.1"
+port = "3306"
+db = "mydb"
