@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bitcoin-trading-automation/internal/api"
 	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
 )
@@ -19,47 +20,67 @@ type PrivateAPI interface {
 }
 
 func NewPrivateAPI(cfg config.Config) PrivateAPI {
-	return &API{
+	api := api.NewAPI(cfg)
+
+	return &BitFlyerAPI{
 		BaseUrl:   BaseUrl(cfg.BitFlyer.BaseEndPoint),
 		ApiKey:    cfg.BitFlyer.ApiKey,
 		ApiSecret: cfg.BitFlyer.ApiSecret,
+		API:       *api,
 	}
 }
 
-func (api *API) GetBalance() ([]models.Balance, error) {
-	url, err := api.BaseUrl.GetBalanceUrl()
+func (bitAPI *BitFlyerAPI) GetBalance() ([]models.Balance, error) {
+	url, err := bitAPI.BaseUrl.GetBalanceUrl()
+	if err != nil {
+		return []models.Balance{}, err
+	}
+
+	headerMap, err := bitAPI.API.PrivateRequestHeader(StringTimeStamp(), http.MethodGet, url, nil)
 	if err != nil {
 		return []models.Balance{}, err
 	}
 
 	var resModel []models.Balance
-	if err := api.do(http.MethodGet, nil, &resModel, url, nil, true); err != nil {
+	if err := bitAPI.API.Do(http.MethodGet, nil, &resModel, url, headerMap); err != nil {
 		return []models.Balance{}, err
 	}
+
 	return resModel, nil
 }
 
-func (api *API) GetCollateral() (models.Collateral, error) {
-	url, err := api.BaseUrl.GetCollateralUrl()
+func (bitAPI *BitFlyerAPI) GetCollateral() (models.Collateral, error) {
+	url, err := bitAPI.BaseUrl.GetCollateralUrl()
 	if err != nil {
 		return models.Collateral{}, err
 	}
+
+	headerMap, err := bitAPI.API.PrivateRequestHeader(StringTimeStamp(), http.MethodGet, url, nil)
+	if err != nil {
+		return models.Collateral{}, err
+	}
+
 	resModel := models.Collateral{}
-	if err := api.do(http.MethodGet, nil, &resModel, url, nil, true); err != nil {
+	if err := bitAPI.API.Do(http.MethodGet, nil, &resModel, url, headerMap); err != nil {
 		return models.Collateral{}, err
 	}
 	return resModel, nil
 }
 
-func (api *API) PostSendChildOrder(req models.SendChildOrderRequest, isDry bool) (models.ChildOrder, error) {
-	url, err := api.BaseUrl.PostSendChildOrderUrl()
+func (bitAPI *BitFlyerAPI) PostSendChildOrder(req models.SendChildOrderRequest, isDry bool) (models.ChildOrder, error) {
+	url, err := bitAPI.BaseUrl.PostSendChildOrderUrl()
 	if err != nil {
 		return models.ChildOrder{}, err
 	}
-	resModel := models.ChildOrder{}
 
+	headerMap, err := bitAPI.API.PrivateRequestHeader(StringTimeStamp(), http.MethodPost, url, nil)
+	if err != nil {
+		return models.ChildOrder{}, err
+	}
+
+	resModel := models.ChildOrder{}
 	if !isDry {
-		if err := api.do(http.MethodPost, req, &resModel, url, nil, true); err != nil {
+		if err := bitAPI.API.Do(http.MethodPost, req, &resModel, url, headerMap); err != nil {
 			return models.ChildOrder{}, err
 		}
 	}
@@ -67,14 +88,19 @@ func (api *API) PostSendChildOrder(req models.SendChildOrderRequest, isDry bool)
 	return resModel, nil
 }
 
-func (api *API) PostCancelChildOrder(req models.CancelChildOrderRequest, isDry bool) error {
-	url, err := api.BaseUrl.PostCancelChildOrderUrl()
+func (bitAPI *BitFlyerAPI) PostCancelChildOrder(req models.CancelChildOrderRequest, isDry bool) error {
+	url, err := bitAPI.BaseUrl.PostCancelChildOrderUrl()
+	if err != nil {
+		return err
+	}
+
+	headerMap, err := bitAPI.API.PrivateRequestHeader(StringTimeStamp(), http.MethodPost, url, nil)
 	if err != nil {
 		return err
 	}
 
 	if !isDry {
-		if err := api.do(http.MethodPost, req, nil, url, nil, true); err != nil {
+		if err := bitAPI.API.Do(http.MethodPost, req, nil, url, headerMap); err != nil {
 			return err
 		}
 	}
@@ -82,13 +108,19 @@ func (api *API) PostCancelChildOrder(req models.CancelChildOrderRequest, isDry b
 	return nil
 }
 
-func (api *API) GetChildOrders() ([]models.ChildOrder, error) {
-	url, err := api.BaseUrl.GetChildOrdersUrl()
+func (bitAPI *BitFlyerAPI) GetChildOrders() ([]models.ChildOrder, error) {
+	url, err := bitAPI.BaseUrl.GetChildOrdersUrl()
 	if err != nil {
 		return []models.ChildOrder{}, err
 	}
+
+	headerMap, err := bitAPI.API.PrivateRequestHeader(StringTimeStamp(), http.MethodGet, url, nil)
+	if err != nil {
+		return []models.ChildOrder{}, err
+	}
+
 	var resModel []models.ChildOrder
-	if err := api.do(http.MethodGet, nil, &resModel, url, nil, true); err != nil {
+	if err := bitAPI.API.Do(http.MethodGet, nil, &resModel, url, headerMap); err != nil {
 		return []models.ChildOrder{}, err
 	}
 	return resModel, nil

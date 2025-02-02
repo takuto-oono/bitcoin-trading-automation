@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/bitcoin-trading-automation/internal/api"
 	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
 )
@@ -21,10 +22,11 @@ func TestNewPrivateAPI(t *testing.T) {
 		args: args{
 			cfg: APITestConfig,
 		},
-		want: &API{
+		want: &BitFlyerAPI{
 			BaseUrl:   BaseUrl(APITestConfig.BitFlyer.BaseEndPoint),
 			ApiKey:    APITestConfig.BitFlyer.ApiKey,
 			ApiSecret: APITestConfig.BitFlyer.ApiSecret,
+			API:       *api.NewAPI(APITestConfig),
 		},
 	}}
 	for _, tt := range tests {

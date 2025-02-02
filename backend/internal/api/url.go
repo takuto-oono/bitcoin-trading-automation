@@ -23,3 +23,12 @@ func (t TickerLogServer) PostTickerLog() (string, error) {
 	}
 	return u.String(), nil
 }
+
+func extractPath(u string) (string, error) {
+	uObj, err := url.Parse(u)
+	if err != nil {
+		return "", err
+	}
+	return uObj.Path, nil
+}
+

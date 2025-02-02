@@ -97,11 +97,3 @@ func withSuffixSlash(s string) string {
 	}
 	return s + "/"
 }
-
-func extractPath(u string) (string, error) {
-	uObj, err := url.Parse(u)
-	if err != nil {
-		return "", err
-	}
-	return uObj.Path, nil
-}

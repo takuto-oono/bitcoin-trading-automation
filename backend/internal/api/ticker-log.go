@@ -12,7 +12,7 @@ func (api *API) TickerLogPostTicker(ticker models.Ticket) error {
 		return err
 	}
 
-	if err := Do(http.MethodPost, ticker, nil, url, nil); err != nil {
+	if err := api.Do(http.MethodPost, ticker, nil, url, nil); err != nil {
 		return err
 	}
 
