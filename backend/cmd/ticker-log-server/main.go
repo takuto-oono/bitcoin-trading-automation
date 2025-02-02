@@ -4,7 +4,7 @@ import (
 	"flag"
 
 	"github.com/bitcoin-trading-automation/internal/config"
-	"github.com/bitcoin-trading-automation/internal/ticker-log-server/router"
+	"github.com/bitcoin-trading-automation/internal/router"
 )
 
 func main() {
@@ -14,12 +14,12 @@ func main() {
 
 	cfg := config.NewConfig(*tomlFilePath, *envFilePath)
 
-	r, err := router.NewRouter(cfg)
+	r, err := router.NewTickerLogServerRouter(cfg)
 	if err != nil {
 		panic(err)
 	}
 
-	if err := router.Run(r, cfg); err != nil {
+	if err := router.RunTickerLogServer(r, cfg); err != nil {
 		panic(err)
 	}
 }

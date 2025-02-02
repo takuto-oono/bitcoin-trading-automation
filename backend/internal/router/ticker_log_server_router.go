@@ -10,7 +10,7 @@ import (
 	"github.com/bitcoin-trading-automation/internal/handler"
 )
 
-func NewRouter(cfg config.Config) (*gin.Engine, error) {
+func NewTickerLogServerRouter(cfg config.Config) (*gin.Engine, error) {
 	h, err := handler.NewTickerLogHandler(cfg)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func NewRouter(cfg config.Config) (*gin.Engine, error) {
 	return router, nil
 }
 
-func Run(r *gin.Engine, cfg config.Config) error {
+func RunTickerLogServer(r *gin.Engine, cfg config.Config) error {
 	u, err := url.Parse(cfg.Url.TickerLogServer)
 	if err != nil {
 		return err
