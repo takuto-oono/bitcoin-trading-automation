@@ -7,3 +7,16 @@ services:
       dockerfile: Dockerfile.Redis
     ports:
       - "6379:6379"
+
+  mysql:
+    image: mysql:8.0
+    container_name: bitcoin-trading-automation-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=mypass"
+      - "MYSQL_USER=myuser"
+      - "MYSQL_PASSWORD=mypass"
+      - "MYSQL_DATABASE=mydb"
+    volumes:
+      - ./db:/var/lib/mysql
