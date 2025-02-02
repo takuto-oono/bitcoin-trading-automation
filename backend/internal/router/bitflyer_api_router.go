@@ -9,7 +9,7 @@ import (
 	"github.com/bitcoin-trading-automation/internal/handler"
 )
 
-func NewRouter(cfg config.Config) *gin.Engine {
+func NewBitFlyerRouter(cfg config.Config) *gin.Engine {
 	h := handler.NewBitFlyerHandler(cfg)
 
 	r := gin.Default()

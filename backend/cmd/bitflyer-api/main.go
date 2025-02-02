@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/router"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/router"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 
 	cfg := config.NewConfig(*tomlFilePath, *envFilePath)
 
-	r := router.NewRouter(cfg)
+	r := router.NewBitFlyerRouter(cfg)
 
 	u, err := url.Parse(cfg.Url.BitFlyerAPI)
 	if err != nil {
