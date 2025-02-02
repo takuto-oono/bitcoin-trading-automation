@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/usecase"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/usecase"
 )
 
 type Handler struct {
