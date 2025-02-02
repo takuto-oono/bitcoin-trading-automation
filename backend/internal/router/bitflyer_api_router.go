@@ -5,19 +5,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/handler"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/handler"
 )
 
-func NewRouter(cfg config.Config) *gin.Engine {
-	h := handler.NewHandler(cfg)
+func NewBitFlyerRouter(cfg config.Config) *gin.Engine {
+	h := handler.NewBitFlyerHandler(cfg)
 
 	r := gin.Default()
 
 	return setUpHandler(r, h)
 }
 
-func setUpHandler(r *gin.Engine, h handler.IHandler) *gin.Engine {
+func setUpHandler(r *gin.Engine, h handler.IBitFlyerHandler) *gin.Engine {
 	r.GET("/healthcheck", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "healthcheck ok!",

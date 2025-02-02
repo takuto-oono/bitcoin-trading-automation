@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	"github.com/bitcoin-trading-automation/internal/config"
-	"github.com/bitcoin-trading-automation/internal/redis-server/router"
+	"github.com/bitcoin-trading-automation/internal/router"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 
 	cfg := config.NewConfig(*tomlFilePath, *envFilePath)
 
-	r, err := router.NewRouter(cfg)
+	r, err := router.NewRedisServerRouter(cfg)
 	if err != nil {
 		panic(err)
 	}

@@ -4,14 +4,7 @@ import (
 	"testing"
 
 	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
-	"github.com/bitcoin-trading-automation/internal/config"
 )
-
-var UseCaseTestConfig config.Config
-
-func init() {
-	UseCaseTestConfig = config.NewConfig("../../../toml/local.toml", "../../../env/.env.local")
-}
 
 func TestBitflyerUseCase_GetBoard(t *testing.T) {
 	type args struct {
@@ -46,7 +39,7 @@ func TestBitflyerUseCase_GetBoard(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			_, err := bu.GetBoard(tt.args.productCode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BitflyerUseCase.GetBoard() error = %v, wantErr %v", err, tt.wantErr)
@@ -89,7 +82,7 @@ func TestBitflyerUseCase_GetTicker(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			_, err := bu.GetTicker(tt.args.productCode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BitflyerUseCase.GetTicker() error = %v, wantErr %v", err, tt.wantErr)
@@ -159,7 +152,7 @@ func TestBitflyerUseCase_GetExecutions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			got, err := bu.GetExecutions(tt.args.productCode, tt.args.count, tt.args.before, tt.args.after)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BitflyerUseCase.GetExecutions() error = %v, wantErr %v", err, tt.wantErr)
@@ -205,7 +198,7 @@ func TestBitflyerUseCase_GetBoardState(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			_, err := bu.GetBoardState(tt.args.productCode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BitflyerUseCase.GetBoardState() error = %v, wantErr %v", err, tt.wantErr)
@@ -256,7 +249,7 @@ func TestBitflyerUseCase_GetHealth(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			_, err := bu.GetHealth(tt.args.productCode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BitflyerUseCase.GetHealth() error = %v, wantErr %v", err, tt.wantErr)
@@ -278,7 +271,7 @@ func TestBitflyerUseCase_GetBalance(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			got, err := bu.GetBalance()
 			if err != nil {
 				if !tt.wantErr {
@@ -305,7 +298,7 @@ func TestBitflyerUseCase_GetCollateral(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			_, err := bu.GetCollateral()
 			if err != nil {
 				if !tt.wantErr {
@@ -434,7 +427,7 @@ func TestBitflyerUseCase_PostSendChildOrder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			_, err := bu.PostSendChildOrder(tt.args.productCode, tt.args.ChildOrderType, tt.args.side, tt.args.price, tt.args.size, tt.args.MinuteToExpire, tt.args.TimeInForce, tt.args.isDry)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BitflyerUseCase.PostSendChildOrder() error = %v, wantErr %v", err, tt.wantErr)
@@ -494,7 +487,7 @@ func TestBitflyerUseCase_PostCancelChildOrder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			if err := bu.PostCancelChildOrder(tt.args.productCode, tt.args.ChildOrderID, tt.args.isDry); (err != nil) != tt.wantErr {
 				t.Errorf("BitflyerUseCase.PostCancelChildOrder() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -514,7 +507,7 @@ func TestBitflyerUseCase_GetChildOrders(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bu := NewBitflyerUseCase(UseCaseTestConfig)
+			bu := NewBitflyerUseCase(TestUseCaseConfig)
 			got, err := bu.GetChildOrders()
 			if err != nil {
 				if !tt.wantErr {

@@ -11,24 +11,24 @@ import (
 	"github.com/bitcoin-trading-automation/internal/redis-server/models"
 )
 
-type Handler struct {
+type RedisServerHandler struct {
 	RedisRepository models.RedisRepository
 	Config          config.Config
 }
 
-func NewHandler(cfg config.Config) (*Handler, error) {
+func NewRedisServerHandler(cfg config.Config) (*RedisServerHandler, error) {
 	redisRepository, err := models.NewRedisRepository(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Handler{
+	return &RedisServerHandler{
 		RedisRepository: *redisRepository,
 		Config:          cfg,
 	}, nil
 }
 
-func (h *Handler) GetRedisHandler(ctx *gin.Context) {
+func (h *RedisServerHandler) GetRedisHandler(ctx *gin.Context) {
 	index := ctx.Param("index")
 	key := ctx.Param("key")
 
@@ -58,7 +58,7 @@ func (h *Handler) GetRedisHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"value": value})
 }
 
-func (h *Handler) PostRedisHandler(ctx *gin.Context) {
+func (h *RedisServerHandler) PostRedisHandler(ctx *gin.Context) {
 	index := ctx.Param("index")
 	key := ctx.Param("key")
 
@@ -98,7 +98,7 @@ func (h *Handler) PostRedisHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
-func (h *Handler) DeleteRedisHandler(ctx *gin.Context) {
+func (h *RedisServerHandler) DeleteRedisHandler(ctx *gin.Context) {
 	index := ctx.Param("index")
 	key := ctx.Param("key")
 

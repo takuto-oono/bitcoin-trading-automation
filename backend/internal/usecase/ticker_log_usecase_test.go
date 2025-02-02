@@ -11,14 +11,8 @@ import (
 	"github.com/bitcoin-trading-automation/internal/mysql"
 )
 
-var TestTickerLogUseCaseConfig config.Config
-
-func init() {
-	TestTickerLogUseCaseConfig = config.NewConfig("../../../toml/local.toml", "../../../env/.env.local")
-}
-
 func TestTickerLog_GetTickerLogs(t *testing.T) {
-	m, err := mysql.NewMYSQL(TestTickerLogUseCaseConfig)
+	m, err := mysql.NewMYSQL(TestUseCaseConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -41,9 +35,9 @@ func TestTickerLog_GetTickerLogs(t *testing.T) {
 		{
 			name: "Test GetTickerLogs",
 			fields: fields{
-				Config: TestTickerLogUseCaseConfig,
+				Config: TestUseCaseConfig,
 				MYSQL: func() mysql.MYSQL {
-					mysql, err := mysql.NewMYSQL(TestTickerLogUseCaseConfig)
+					mysql, err := mysql.NewMYSQL(TestUseCaseConfig)
 					if err != nil {
 						panic(err)
 					}
@@ -69,7 +63,7 @@ func TestTickerLog_GetTickerLogs(t *testing.T) {
 }
 
 func TestTickerLog_GetTickerLogByTickID(t *testing.T) {
-	m, err := mysql.NewMYSQL(TestTickerLogUseCaseConfig)
+	m, err := mysql.NewMYSQL(TestUseCaseConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -97,9 +91,9 @@ func TestTickerLog_GetTickerLogByTickID(t *testing.T) {
 		{
 			name: "Test GetTickerLogByTickID",
 			fields: fields{
-				Config: TestTickerLogUseCaseConfig,
+				Config: TestUseCaseConfig,
 				MYSQL: func() mysql.MYSQL {
-					mysql, err := mysql.NewMYSQL(TestTickerLogUseCaseConfig)
+					mysql, err := mysql.NewMYSQL(TestUseCaseConfig)
 					if err != nil {
 						panic(err)
 					}
@@ -115,9 +109,9 @@ func TestTickerLog_GetTickerLogByTickID(t *testing.T) {
 		{
 			name: "Test GetTickerLogByTickID",
 			fields: fields{
-				Config: TestTickerLogUseCaseConfig,
+				Config: TestUseCaseConfig,
 				MYSQL: func() mysql.MYSQL {
-					mysql, err := mysql.NewMYSQL(TestTickerLogUseCaseConfig)
+					mysql, err := mysql.NewMYSQL(TestUseCaseConfig)
 					if err != nil {
 						panic(err)
 					}
@@ -166,9 +160,9 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 		{
 			name: "Test PostTickerLog",
 			fields: fields{
-				Config: TestTickerLogUseCaseConfig,
+				Config: TestUseCaseConfig,
 				MYSQL: func() mysql.MYSQL {
-					mysql, err := mysql.NewMYSQL(TestTickerLogUseCaseConfig)
+					mysql, err := mysql.NewMYSQL(TestUseCaseConfig)
 					if err != nil {
 						panic(err)
 					}
@@ -199,9 +193,9 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 		{
 			name: "Test PostTickerLog invalid timestamp",
 			fields: fields{
-				Config: TestTickerLogUseCaseConfig,
+				Config: TestUseCaseConfig,
 				MYSQL: func() mysql.MYSQL {
-					mysql, err := mysql.NewMYSQL(TestTickerLogUseCaseConfig)
+					mysql, err := mysql.NewMYSQL(TestUseCaseConfig)
 					if err != nil {
 						panic(err)
 					}
