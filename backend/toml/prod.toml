@@ -1,0 +1,20 @@
+[url]
+bitFlyerAPI = "http://bitflyer-api:7001"
+slackNotification = "http://slack-notification:7002"
+redisServer = "http://redis-server:7003"
+tickerLogServer = "http://ticker-log-server:7004"
+
+
+[bitFlyer]
+baseEndPoint = "https://api.bitflyer.com"
+
+[redis]
+address = "redis:6380"
+indexCount = 2
+
+[mysql]
+user = "myuser"
+password = "mypass"
+host = "mysql"
+port = "3307"
+db = "mydb"

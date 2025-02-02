@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  redis:
+    build:
+      context: ../../
+      dockerfile: docker/prod/Dockerfile.Redis
+    ports:
+      - "6380:6380"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql:
+    image: mysql:8.0
+    container_name: bitcoin-trading-automation-mysql-prod
+    ports:
+      - "3307:3307"
+    expose:
+      - 3307
+    environment:
+      - "MYSQL_ROOT_PASSWORD=mypass"
+      - "MYSQL_USER=myuser"
+      - "MYSQL_PASSWORD=mypass"
+      - "MYSQL_DATABASE=mydb"
+      - "MYSQL_TCP_PORT=3307"
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./mysql.conf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bitflyer-api:
+    build:
+      context: ../../
+      dockerfile: docker/prod/Dockerfile.BitflyerAPI
+    command: sh -c "sleep 10 && ./bitflyer-api -toml toml/prod.toml -env env/.env.prod"
+    ports:
+      - "7001:7001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  slack-notification:
+    build:
+      context: ../../
+      dockerfile: docker/prod/Dockerfile.SlackNotification
+    command: sh -c "sleep 10 && ./slack-notification -toml toml/prod.toml -env env/.env.prod"
+    ports:
+      - "7002:7002"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  redis-server:
+    build:
+      context: ../../
+      dockerfile: docker/prod/Dockerfile.RedisServer
+    command: sh -c "sleep 10 && ./redis-server -toml toml/prod.toml -env env/.env.prod"
+    ports:
+      - "7003:7003"
+
+  ticker-log-server:
+    build:
+      context: ../../
+      dockerfile: docker/prod/Dockerfile.TickerLogServer
+    command: sh -c "sleep 10 && ./ticker-log-server -toml toml/prod.toml -env env/.env.prod"
+    ports:
+      - "7004:7004"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  ticker-log-batch:
+    build:
+      context: ../../
+      dockerfile: docker/prod/Dockerfile.TickerLogBatch
+    command: sh -c "sleep 30 && ./ticker-log-batch -toml toml/prod.toml -env env/.env.prod"
+    depends_on:
+      mysql:
+        condition: service_healthy
