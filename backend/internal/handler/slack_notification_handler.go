@@ -5,15 +5,31 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/bitcoin-trading-automation/internal/config"
+	slackapi "github.com/bitcoin-trading-automation/internal/slack-notification/slack-api"
 	"github.com/gin-gonic/gin"
 )
+
+type SlackNotificationHandler struct {
+	Config   config.Config
+	SlackAPI slackapi.SlackAPI
+}
+
+func NewSlackNotificationHandler(cfg config.Config) (*SlackNotificationHandler, error) {
+	slackAPI, err := slackapi.NewSlackAPI(&cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SlackNotificationHandler{Config: cfg, SlackAPI: *slackAPI}, nil
+}
 
 type PostMessageRequestBody struct {
 	Channel string `json:"channel"`
 	Text    string `json:"text"`
 }
 
-func (h *Handler) PostMessage(ctx *gin.Context) {
+func (h *SlackNotificationHandler) PostMessage(ctx *gin.Context) {
 	var req PostMessageRequestBody
 	if err := ctx.BindJSON(&req); err != nil {
 		log.Printf("failed to bind json: %v", err)

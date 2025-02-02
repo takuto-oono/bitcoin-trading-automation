@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/bitcoin-trading-automation/internal/config"
-	"github.com/bitcoin-trading-automation/internal/slack-notification/handler"
+	"github.com/bitcoin-trading-automation/internal/handler"
 )
 
 func NewRouter(cfg config.Config) (*gin.Engine, error) {
-	h, err := handler.NewHandler(cfg)
+	h, err := handler.NewSlackNotificationHandler(cfg)
 	if err != nil {
 		return nil, err
 	}
