@@ -10,12 +10,12 @@ import (
 	"github.com/bitcoin-trading-automation/internal/usecase"
 )
 
-type Handler struct {
+type BitFlyerHandler struct {
 	UseCase usecase.IBitflyerUseCase
 	Config  config.Config
 }
 
-type IHandler interface {
+type IBitFlyerHandler interface {
 	// Public API
 	GetBoard(ctx *gin.Context)
 	GetTicker(ctx *gin.Context)
@@ -31,12 +31,12 @@ type IHandler interface {
 	GetChildOrders(ctx *gin.Context)
 }
 
-func NewHandler(cfg config.Config) IHandler {
+func NewBitFlyerHandler(cfg config.Config) IBitFlyerHandler {
 	u := usecase.NewBitflyerUseCase(cfg)
-	return &Handler{UseCase: u, Config: cfg}
+	return &BitFlyerHandler{UseCase: u, Config: cfg}
 }
 
-func (h *Handler) GetBoard(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetBoard(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
 	board, err := h.UseCase.GetBoard(productCode)
 	if err != nil {
@@ -46,7 +46,7 @@ func (h *Handler) GetBoard(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, board)
 }
 
-func (h *Handler) GetTicker(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetTicker(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
 	ticker, err := h.UseCase.GetTicker(productCode)
 	if err != nil {
@@ -72,7 +72,7 @@ func NewGetExecutionsQueryParams(qp url.Values) *GetExecutionsQueryParams {
 	}
 }
 
-func (h *Handler) GetExecutions(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetExecutions(ctx *gin.Context) {
 	qp := NewGetExecutionsQueryParams(ctx.Request.URL.Query())
 
 	executions, err := h.UseCase.GetExecutions(qp.ProductCode, qp.Count, qp.Before, qp.After)
@@ -83,7 +83,7 @@ func (h *Handler) GetExecutions(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, executions)
 }
 
-func (h *Handler) GetBoardState(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetBoardState(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
 	boardState, err := h.UseCase.GetBoardState(productCode)
 	if err != nil {
@@ -93,7 +93,7 @@ func (h *Handler) GetBoardState(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, boardState)
 }
 
-func (h *Handler) GetHealth(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetHealth(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
 	health, err := h.UseCase.GetHealth(productCode)
 	if err != nil {
@@ -103,7 +103,7 @@ func (h *Handler) GetHealth(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, health)
 }
 
-func (h *Handler) GetBalance(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetBalance(ctx *gin.Context) {
 	balance, err := h.UseCase.GetBalance()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -112,7 +112,7 @@ func (h *Handler) GetBalance(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, balance)
 }
 
-func (h *Handler) GetCollateral(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetCollateral(ctx *gin.Context) {
 	collateral, err := h.UseCase.GetCollateral()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -121,7 +121,7 @@ func (h *Handler) GetCollateral(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, collateral)
 }
 
-func (h *Handler) PostSendChildOrder(ctx *gin.Context) {
+func (h *BitFlyerHandler) PostSendChildOrder(ctx *gin.Context) {
 	req, err := NewPostSendChildOrderRequestBody(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -153,7 +153,7 @@ func NewPostSendChildOrderRequestBody(ctx *gin.Context) (PostSendChildOrderReque
 	return req, err
 }
 
-func (h *Handler) PostCancelChildOrder(ctx *gin.Context) {
+func (h *BitFlyerHandler) PostCancelChildOrder(ctx *gin.Context) {
 	req, err := NewCancelChildOrderRequestBody(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -180,7 +180,7 @@ func NewCancelChildOrderRequestBody(ctx *gin.Context) (CancelChildOrderRequestBo
 	return req, err
 }
 
-func (h *Handler) GetChildOrders(ctx *gin.Context) {
+func (h *BitFlyerHandler) GetChildOrders(ctx *gin.Context) {
 	childOrders, err := h.UseCase.GetChildOrders()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
