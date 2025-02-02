@@ -13,7 +13,7 @@ func (api *API) GetTicker() (models.Ticket, error) {
 	}
 
 	var ticker models.Ticket
-	if err := Do(http.MethodGet, nil, &ticker, url, nil); err != nil {
+	if err := api.Do(http.MethodGet, nil, &ticker, url, nil); err != nil {
 		return models.Ticket{}, err
 	}
 
