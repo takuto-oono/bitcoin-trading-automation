@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"os"
 	"os/exec"
 	"strconv"
 	"testing"
@@ -13,23 +12,16 @@ import (
 	"github.com/bitcoin-trading-automation/internal/mysql"
 )
 
-func TestMain(m *testing.M) {
-	go main()
-
-	code := m.Run()
-
-	os.Exit(code)
-}
-
 func TestMainFunction(t *testing.T) {
+	go main()
+	time.Sleep(3 * time.Second)
+
 	cfg := config.NewConfig("../../toml/local.toml", "../../env/.env.local")
 
 	m, err := mysql.NewMYSQL(cfg)
 	if err != nil {
 		panic(err)
 	}
-
-	time.Sleep(3 * time.Second)
 
 	ticker := mysql.NewTicker(1, "BTC_JPY", "RUNNING", time.Now().Unix(), 1000000, 1000000, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1000000, 1000000, 1000000)
 
