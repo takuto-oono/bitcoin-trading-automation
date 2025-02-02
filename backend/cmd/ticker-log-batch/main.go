@@ -43,6 +43,7 @@ func getTicker(api *api.API, c chan models.Ticket) {
 		ticker, err := api.GetTicker()
 		if err != nil {
 			log.Printf("Failed to get ticker: %v", err)
+			continue
 		}
 
 		c <- ticker
