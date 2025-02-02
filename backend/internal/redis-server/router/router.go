@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/bitcoin-trading-automation/internal/config"
-	"github.com/bitcoin-trading-automation/internal/redis-server/handler"
+	"github.com/bitcoin-trading-automation/internal/handler"
 )
 
 func NewRouter(cfg config.Config) (*gin.Engine, error) {
-	h, err := handler.NewHandler(cfg)
+	h, err := handler.NewRedisServerHandler(cfg)
 	if err != nil {
 		return nil, err
 	}
