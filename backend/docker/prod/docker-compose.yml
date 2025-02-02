@@ -8,10 +8,10 @@ services:
     ports:
       - "6380:6380"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6380", "ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 40
 
   mysql:
     image: mysql:8.0
@@ -31,45 +31,42 @@ services:
       - ./mysql.conf:/etc/mysql/mysql.conf.d/mysqld.cnf
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 1s
+      timeout: 1s
+      retries: 40
 
   bitflyer-api:
     build:
       context: ../../
       dockerfile: docker/prod/Dockerfile.BitflyerAPI
-    command: sh -c "sleep 10 && ./bitflyer-api -toml toml/prod.toml -env env/.env.prod"
+    command: ./bitflyer-api -toml toml/prod.toml -env env/.env.prod
     ports:
       - "7001:7001"
-    depends_on:
-      mysql:
-        condition: service_healthy
 
   slack-notification:
     build:
       context: ../../
       dockerfile: docker/prod/Dockerfile.SlackNotification
-    command: sh -c "sleep 10 && ./slack-notification -toml toml/prod.toml -env env/.env.prod"
+    command: ./slack-notification -toml toml/prod.toml -env env/.env.prod
     ports:
       - "7002:7002"
-    depends_on:
-      mysql:
-        condition: service_healthy
 
   redis-server:
     build:
       context: ../../
       dockerfile: docker/prod/Dockerfile.RedisServer
-    command: sh -c "sleep 10 && ./redis-server -toml toml/prod.toml -env env/.env.prod"
+    command: ./redis-server -toml toml/prod.toml -env env/.env.prod
     ports:
       - "7003:7003"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   ticker-log-server:
     build:
       context: ../../
       dockerfile: docker/prod/Dockerfile.TickerLogServer
-    command: sh -c "sleep 10 && ./ticker-log-server -toml toml/prod.toml -env env/.env.prod"
+    command: ./ticker-log-server -toml toml/prod.toml -env env/.env.prod
     ports:
       - "7004:7004"
     depends_on:
@@ -80,7 +77,7 @@ services:
     build:
       context: ../../
       dockerfile: docker/prod/Dockerfile.TickerLogBatch
-    command: sh -c "sleep 30 && ./ticker-log-batch -toml toml/prod.toml -env env/.env.prod"
+    command: sh -c "sleep 3 && ./ticker-log-batch -toml toml/prod.toml -env env/.env.prod"
     depends_on:
       mysql:
         condition: service_healthy
