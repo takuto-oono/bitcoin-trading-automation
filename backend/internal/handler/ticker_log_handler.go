@@ -10,30 +10,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct {
+type TickerLogHandler struct {
 	Config  config.Config
 	UseCase usecase.ITickerLog
 }
 
-type Ihandler interface {
+type ITickerLogHandler interface {
 	GetTickerLogs(ctx *gin.Context)
 	GetTickerLogByTickID(ctx *gin.Context)
 	PostTickerLog(ctx *gin.Context)
 }
 
-func NewHandler(cfg config.Config) (Ihandler, error) {
+func NewTickerLogHandler(cfg config.Config) (ITickerLogHandler, error) {
 	useCase, err := usecase.NewTickerLog(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Handler{
+	return &TickerLogHandler{
 		Config:  cfg,
 		UseCase: useCase,
 	}, nil
 }
 
-func (h *Handler) GetTickerLogs(ctx *gin.Context) {
+func (h *TickerLogHandler) GetTickerLogs(ctx *gin.Context) {
 	tickerLogs, err := h.UseCase.GetTickerLogs()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -43,7 +43,7 @@ func (h *Handler) GetTickerLogs(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, tickerLogs)
 }
 
-func (h *Handler) GetTickerLogByTickID(ctx *gin.Context) {
+func (h *TickerLogHandler) GetTickerLogByTickID(ctx *gin.Context) {
 	tickerIDStr := ctx.Param("tickerID")
 	tickerID, err := strconv.Atoi(tickerIDStr)
 	if err != nil {
@@ -64,7 +64,7 @@ func (h *Handler) GetTickerLogByTickID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, ticker)
 }
 
-func (h *Handler) PostTickerLog(ctx *gin.Context) {
+func (h *TickerLogHandler) PostTickerLog(ctx *gin.Context) {
 	var ticker models.Ticket
 	if err := ctx.BindJSON(&ticker); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
