@@ -34,13 +34,13 @@ func NewTickerLogHandler(cfg config.Config) (ITickerLogHandler, error) {
 }
 
 func (h *TickerLogHandler) GetTickerLogs(ctx *gin.Context) {
-	tickerLogs, err := h.UseCase.GetTickerLogs()
+	tickerLogs, statusCode, err := h.UseCase.GetTickerLogs()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, tickerLogs)
+	ctx.JSON(statusCode, tickerLogs)
 }
 
 func (h *TickerLogHandler) GetTickerLogByTickID(ctx *gin.Context) {
@@ -51,17 +51,13 @@ func (h *TickerLogHandler) GetTickerLogByTickID(ctx *gin.Context) {
 		return
 	}
 
-	ticker, err := h.UseCase.GetTickerLogByTickID(tickerID)
+	ticker, statusCode, err := h.UseCase.GetTickerLogByTickID(tickerID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	if ticker == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Ticker not found"})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, ticker)
+	ctx.JSON(statusCode, ticker)
 }
 
 func (h *TickerLogHandler) PostTickerLog(ctx *gin.Context) {
@@ -71,11 +67,11 @@ func (h *TickerLogHandler) PostTickerLog(ctx *gin.Context) {
 		return
 	}
 
-	err := h.UseCase.PostTickerLog(ticker)
+	statusCode, err := h.UseCase.PostTickerLog(ticker)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Ticker log posted"})
+	ctx.JSON(statusCode, gin.H{"message": "Ticker log posted"})
 }

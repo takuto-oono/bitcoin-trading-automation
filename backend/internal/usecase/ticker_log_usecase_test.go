@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"math/rand"
+	"net/http"
 	"reflect"
 	"testing"
 	"time"
@@ -28,9 +29,10 @@ func TestTickerLog_GetTickerLogs(t *testing.T) {
 		MYSQL  mysql.MYSQL
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
+		name       string
+		fields     fields
+		statusCode int
+		wantErr    bool
 	}{
 		{
 			name: "Test GetTickerLogs",
@@ -44,7 +46,8 @@ func TestTickerLog_GetTickerLogs(t *testing.T) {
 					return *mysql
 				}(),
 			},
-			wantErr: false,
+			statusCode: http.StatusOK,
+			wantErr:    false,
 		},
 	}
 	for _, tt := range tests {
@@ -53,10 +56,13 @@ func TestTickerLog_GetTickerLogs(t *testing.T) {
 				Config: tt.fields.Config,
 				MYSQL:  tt.fields.MYSQL,
 			}
-			_, err := tr.GetTickerLogs()
+			_, statusCode, err := tr.GetTickerLogs()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TickerLog.GetTickerLogs() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+			if statusCode != tt.statusCode {
+				t.Errorf("TickerLog.GetTickerLogs() = %v, want %v", statusCode, tt.statusCode)
 			}
 		})
 	}
@@ -82,11 +88,12 @@ func TestTickerLog_GetTickerLogByTickID(t *testing.T) {
 		tickerID int
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *mysql.Ticker
-		wantErr bool
+		name           string
+		fields         fields
+		args           args
+		want           *mysql.Ticker
+		wantStatusCode int
+		wantErr        bool
 	}{
 		{
 			name: "Test GetTickerLogByTickID",
@@ -103,8 +110,9 @@ func TestTickerLog_GetTickerLogByTickID(t *testing.T) {
 			args: args{
 				tickerID: ticker.TickID,
 			},
-			want:    ticker,
-			wantErr: false,
+			want:           ticker,
+			wantStatusCode: http.StatusOK,
+			wantErr:        false,
 		},
 		{
 			name: "Test GetTickerLogByTickID",
@@ -121,8 +129,9 @@ func TestTickerLog_GetTickerLogByTickID(t *testing.T) {
 			args: args{
 				tickerID: 0,
 			},
-			want:    nil,
-			wantErr: false,
+			want:           nil,
+			wantStatusCode: http.StatusNotFound,
+			wantErr:        false,
 		},
 	}
 	for _, tt := range tests {
@@ -131,10 +140,13 @@ func TestTickerLog_GetTickerLogByTickID(t *testing.T) {
 				Config: tt.fields.Config,
 				MYSQL:  tt.fields.MYSQL,
 			}
-			got, err := tr.GetTickerLogByTickID(tt.args.tickerID)
+			got, statusCode, err := tr.GetTickerLogByTickID(tt.args.tickerID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TickerLog.GetTickerLogByTickID() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+			if statusCode != tt.wantStatusCode {
+				t.Errorf("TickerLog.GetTickerLogByTickID() = %v, want %v", statusCode, tt.wantStatusCode)
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("TickerLog.GetTickerLogByTickID() = %v, want %v", got, tt.want)
@@ -152,10 +164,11 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 		ticker models.Ticket
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
+		name           string
+		fields         fields
+		args           args
+		wantStatusCode int
+		wantErr        bool
 	}{
 		{
 			name: "Test PostTickerLog",
@@ -171,24 +184,25 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 			},
 			args: args{
 				ticker: models.Ticket{
-					TickID:           rand.Int(),
-					ProductCode:      "BTC_JPY",
-					State:            "RUNNING",
-					Timestamp:        "2006-01-02T15:04:05.000",
-					BestBid:          1000000,
-					BestAsk:          1000000,
-					BestBidSize:      0.1,
-					BestAskSize:      0.1,
-					TotalBidDepth:    0.1,
-					TotalAskDepth:    0.1,
-					MarketBidSize:    0.1,
-					MarketAskSize:    0.1,
-					Ltp:              1000000,
-					Volume:           1000000,
-					VolumeByProduct:  1000000,
+					TickID:          rand.Int(),
+					ProductCode:     "BTC_JPY",
+					State:           "RUNNING",
+					Timestamp:       "2006-01-02T15:04:05.000",
+					BestBid:         1000000,
+					BestAsk:         1000000,
+					BestBidSize:     0.1,
+					BestAskSize:     0.1,
+					TotalBidDepth:   0.1,
+					TotalAskDepth:   0.1,
+					MarketBidSize:   0.1,
+					MarketAskSize:   0.1,
+					Ltp:             1000000,
+					Volume:          1000000,
+					VolumeByProduct: 1000000,
 				},
 			},
-			wantErr: false,
+			wantStatusCode: http.StatusOK,
+			wantErr:        false,
 		},
 		{
 			name: "Test PostTickerLog invalid timestamp",
@@ -204,24 +218,25 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 			},
 			args: args{
 				ticker: models.Ticket{
-					TickID:           rand.Int(),
-					ProductCode:      "BTC_JPY",
-					State:            "RUNNING",
-					Timestamp:        "invalid",
-					BestBid:          1000000,
-					BestAsk:          1000000,
-					BestBidSize:      0.1,
-					BestAskSize:      0.1,
-					TotalBidDepth:    0.1,
-					TotalAskDepth:    0.1,
-					MarketBidSize:    0.1,
-					MarketAskSize:    0.1,
-					Ltp:              1000000,
-					Volume:           1000000,
-					VolumeByProduct:  1000000,
+					TickID:          rand.Int(),
+					ProductCode:     "BTC_JPY",
+					State:           "RUNNING",
+					Timestamp:       "invalid",
+					BestBid:         1000000,
+					BestAsk:         1000000,
+					BestBidSize:     0.1,
+					BestAskSize:     0.1,
+					TotalBidDepth:   0.1,
+					TotalAskDepth:   0.1,
+					MarketBidSize:   0.1,
+					MarketAskSize:   0.1,
+					Ltp:             1000000,
+					Volume:          1000000,
+					VolumeByProduct: 1000000,
 				},
 			},
-			wantErr: true,
+			wantStatusCode: http.StatusBadRequest,
+			wantErr:        true,
 		},
 	}
 	for _, tt := range tests {
@@ -230,8 +245,12 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 				Config: tt.fields.Config,
 				MYSQL:  tt.fields.MYSQL,
 			}
-			if err := tr.PostTickerLog(tt.args.ticker); (err != nil) != tt.wantErr {
+			statusCode, err := tr.PostTickerLog(tt.args.ticker)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("TickerLog.PostTickerLog() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if statusCode != tt.wantStatusCode {
+				t.Errorf("TickerLog.PostTickerLog() = %v, want %v", statusCode, tt.wantStatusCode)
 			}
 		})
 	}
