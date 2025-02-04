@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
@@ -15,9 +16,9 @@ type TickerLog struct {
 }
 
 type ITickerLog interface {
-	GetTickerLogs() ([]mysql.Ticker, error)
-	GetTickerLogByTickID(tickerID int) (*mysql.Ticker, error)
-	PostTickerLog(ticker models.Ticket) error
+	GetTickerLogs() ([]mysql.Ticker, int, error)
+	GetTickerLogByTickID(tickerID int) (*mysql.Ticker, int, error)
+	PostTickerLog(ticker models.Ticket) (int, error)
 }
 
 func NewTickerLog(cfg config.Config) (ITickerLog, error) {
@@ -32,22 +33,31 @@ func NewTickerLog(cfg config.Config) (ITickerLog, error) {
 	}, nil
 }
 
-func (t *TickerLog) GetTickerLogs() ([]mysql.Ticker, error) {
+func (t *TickerLog) GetTickerLogs() ([]mysql.Ticker, int, error) {
 	tickerLogs, err := mysql.GetTickers(t.MYSQL.DB)
 	if err != nil {
-		return []mysql.Ticker{}, err
+		return []mysql.Ticker{}, http.StatusInternalServerError, err
 	}
-	return tickerLogs, nil
+	return tickerLogs, http.StatusOK, nil
 }
 
-func (t *TickerLog) GetTickerLogByTickID(tickerID int) (*mysql.Ticker, error) {
-	return mysql.GetTicker(t.MYSQL.DB, tickerID)
+func (t *TickerLog) GetTickerLogByTickID(tickerID int) (*mysql.Ticker, int, error) {
+	ticker, err := mysql.GetTicker(t.MYSQL.DB, tickerID)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
+	if ticker == nil {
+		return nil, http.StatusNotFound, nil
+	}
+
+	return ticker, http.StatusOK, nil
 }
 
-func (t *TickerLog) PostTickerLog(ticker models.Ticket) error {
+func (t *TickerLog) PostTickerLog(ticker models.Ticket) (int, error) {
 	timestamp, err := parseTimestamp(ticker.Timestamp)
 	if err != nil {
-		return err
+		return http.StatusBadRequest, err
 	}
 
 	myTicker := mysql.NewTicker(
@@ -69,19 +79,19 @@ func (t *TickerLog) PostTickerLog(ticker models.Ticket) error {
 	)
 
 	if err := myTicker.Insert(t.MYSQL.DB); err != nil {
-		return err
+		return http.StatusInternalServerError, err
 	}
 
-	return nil
+	return http.StatusOK, nil
 }
 
 func parseTimestamp(timestamp string) (int64, error) {
 	layouts := []string{
-        "2006-01-02T15:04:05.000Z",
-        "2006-01-02T15:04:05.000",
-        "2006-01-02T15:04:05",
-        "2006-01-02 15:04:05",
-    }
+		"2006-01-02T15:04:05.000Z",
+		"2006-01-02T15:04:05.000",
+		"2006-01-02T15:04:05",
+		"2006-01-02 15:04:05",
+	}
 
 	for _, layout := range layouts {
 		timestamp, err := time.Parse(layout, timestamp)
