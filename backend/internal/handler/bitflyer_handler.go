@@ -38,22 +38,22 @@ func NewBitFlyerHandler(cfg config.Config) IBitFlyerHandler {
 
 func (h *BitFlyerHandler) GetBoard(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
-	board, err := h.UseCase.GetBoard(productCode)
+	board, statusCode, err := h.UseCase.GetBoard(productCode)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, board)
+	ctx.JSON(statusCode, board)
 }
 
 func (h *BitFlyerHandler) GetTicker(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
-	ticker, err := h.UseCase.GetTicker(productCode)
+	ticker, statusCode, err := h.UseCase.GetTicker(productCode)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, ticker)
+	ctx.JSON(statusCode, ticker)
 }
 
 type GetExecutionsQueryParams struct {
@@ -75,50 +75,50 @@ func NewGetExecutionsQueryParams(qp url.Values) *GetExecutionsQueryParams {
 func (h *BitFlyerHandler) GetExecutions(ctx *gin.Context) {
 	qp := NewGetExecutionsQueryParams(ctx.Request.URL.Query())
 
-	executions, err := h.UseCase.GetExecutions(qp.ProductCode, qp.Count, qp.Before, qp.After)
+	executions, statusCode, err := h.UseCase.GetExecutions(qp.ProductCode, qp.Count, qp.Before, qp.After)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, executions)
+	ctx.JSON(statusCode, executions)
 }
 
 func (h *BitFlyerHandler) GetBoardState(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
-	boardState, err := h.UseCase.GetBoardState(productCode)
+	boardState, statusCode, err := h.UseCase.GetBoardState(productCode)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, boardState)
+	ctx.JSON(statusCode, boardState)
 }
 
 func (h *BitFlyerHandler) GetHealth(ctx *gin.Context) {
 	productCode := ctx.Request.URL.Query().Get("product_code")
-	health, err := h.UseCase.GetHealth(productCode)
+	health, statusCode, err := h.UseCase.GetHealth(productCode)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, health)
+	ctx.JSON(statusCode, health)
 }
 
 func (h *BitFlyerHandler) GetBalance(ctx *gin.Context) {
-	balance, err := h.UseCase.GetBalance()
+	balance, statusCode, err := h.UseCase.GetBalance()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, balance)
+	ctx.JSON(statusCode, balance)
 }
 
 func (h *BitFlyerHandler) GetCollateral(ctx *gin.Context) {
-	collateral, err := h.UseCase.GetCollateral()
+	collateral, statusCode, err := h.UseCase.GetCollateral()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, collateral)
+	ctx.JSON(statusCode, collateral)
 }
 
 func (h *BitFlyerHandler) PostSendChildOrder(ctx *gin.Context) {
@@ -129,12 +129,12 @@ func (h *BitFlyerHandler) PostSendChildOrder(ctx *gin.Context) {
 	}
 
 	isDry := ctx.Request.URL.Query().Get("dry_run") == "1"
-	childOrder, err := h.UseCase.PostSendChildOrder(req.ProductCode, req.ChildOrderType, req.Side, req.Price, req.Size, req.MinuteToExpire, req.TimeInForce, isDry)
+	childOrder, statusCode, err := h.UseCase.PostSendChildOrder(req.ProductCode, req.ChildOrderType, req.Side, req.Price, req.Size, req.MinuteToExpire, req.TimeInForce, isDry)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, childOrder)
+	ctx.JSON(statusCode, childOrder)
 }
 
 type PostSendChildOrderRequestBody struct {
@@ -161,12 +161,12 @@ func (h *BitFlyerHandler) PostCancelChildOrder(ctx *gin.Context) {
 	}
 
 	isDry := ctx.Request.URL.Query().Get("dry_run") == "1"
-	err = h.UseCase.PostCancelChildOrder(req.ProductCode, req.ChildOrderID, isDry)
+	statusCode, err := h.UseCase.PostCancelChildOrder(req.ProductCode, req.ChildOrderID, isDry)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	ctx.JSON(statusCode, gin.H{"message": "success"})
 }
 
 type CancelChildOrderRequestBody struct {
@@ -181,10 +181,10 @@ func NewCancelChildOrderRequestBody(ctx *gin.Context) (CancelChildOrderRequestBo
 }
 
 func (h *BitFlyerHandler) GetChildOrders(ctx *gin.Context) {
-	childOrders, err := h.UseCase.GetChildOrders()
+	childOrders, statusCode, err := h.UseCase.GetChildOrders()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, childOrders)
+	ctx.JSON(statusCode, childOrders)
 }
