@@ -22,7 +22,7 @@ func TestMainFunction(t *testing.T) {
 		{
 			name: "health check",
 			args: args{
-				curl: []string{"curl", "http://localhost:8002/health"},
+				curl: []string{"curl", "http://localhost:8002/healthcheck"},
 			},
 		},
 		{
