@@ -7,6 +7,7 @@ import (
 	"github.com/bitcoin-trading-automation/internal/router"
 )
 
+// go run cmd/ticker-log-server/main.go -toml toml/local.toml -env env/.env.local
 func main() {
 	tomlFilePath := flag.String("toml", "../../toml/local.toml", "tomlファイルの名前")
 	envFilePath := flag.String("env", "../../env/.env.local", "envファイルのパス")
