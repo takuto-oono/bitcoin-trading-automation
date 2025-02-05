@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/bitcoin-trading-automation/internal/config"
 )
@@ -112,4 +113,12 @@ func marshalJson(v any) ([]byte, error) {
 		return []byte{}, nil
 	}
 	return json.Marshal(v)
+}
+
+func extractPath(u string) (string, error) {
+	uObj, err := url.Parse(u)
+	if err != nil {
+		return "", err
+	}
+	return uObj.Path, nil
 }

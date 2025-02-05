@@ -31,6 +31,12 @@ func TestMainFunction(t *testing.T) {
 		args args
 	}{
 		{
+			name: "health check",
+			args: args{
+				curl: []string{"curl", "-w", "%{http_code}", "-o", "/dev/null", "-s", "http://localhost:8003/healthcheck"},
+			},
+		},
+		{
 			name: "get_redis_handler",
 			args: args{
 				func() []string {

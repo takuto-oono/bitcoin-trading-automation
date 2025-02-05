@@ -18,7 +18,7 @@ func NewTickerLogServerRouter(cfg config.Config) (*gin.Engine, error) {
 
 	router := gin.Default()
 
-	router.GET("/health", func(c *gin.Context) {
+	router.GET("/healthcheck", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "ok",
 		})

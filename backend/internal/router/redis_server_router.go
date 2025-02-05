@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/bitcoin-trading-automation/internal/config"
@@ -14,6 +16,12 @@ func NewRedisServerRouter(cfg config.Config) (*gin.Engine, error) {
 	}
 
 	r := gin.Default()
+
+	r.GET("/healthcheck", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "healthcheck ok!",
+		})
+	})
 
 	r.GET("index/:index/key/:key", h.GetRedisHandler)
 	r.POST("index/:index/key/:key", h.PostRedisHandler)

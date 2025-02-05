@@ -40,7 +40,7 @@ func TestMainFunction(t *testing.T) {
 		{
 			name: "health check",
 			args: args{
-				curl: []string{"curl", "-w", "%{http_code}", "-o", "/dev/null", "-s", "http://localhost:8004/health"},
+				curl: []string{"curl", "-w", "%{http_code}", "-o", "/dev/null", "-s", "http://localhost:8004/healthcheck"},
 			},
 		},
 		{
