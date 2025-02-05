@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"errors"
 	"log"
 	"net/http"
 
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/models"
 	slackapi "github.com/bitcoin-trading-automation/internal/slack-notification/slack-api"
 	"github.com/gin-gonic/gin"
 )
@@ -24,13 +24,8 @@ func NewSlackNotificationHandler(cfg config.Config) (*SlackNotificationHandler, 
 	return &SlackNotificationHandler{Config: cfg, SlackAPI: *slackAPI}, nil
 }
 
-type PostMessageRequestBody struct {
-	Channel string `json:"channel"`
-	Text    string `json:"text"`
-}
-
 func (h *SlackNotificationHandler) PostMessage(ctx *gin.Context) {
-	var req PostMessageRequestBody
+	var req models.SlackNotificationPostMessage
 	if err := ctx.BindJSON(&req); err != nil {
 		log.Printf("failed to bind json: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request bind error"})
@@ -50,16 +45,4 @@ func (h *SlackNotificationHandler) PostMessage(ctx *gin.Context) {
 
 	log.Printf("message posted successfully")
 	ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
-}
-
-func (b *PostMessageRequestBody) Validate() error {
-	if b.Channel == "" {
-		return errors.New("channel is required")
-	}
-
-	if b.Text == "" {
-		return errors.New("text is required")
-	}
-
-	return nil
 }
