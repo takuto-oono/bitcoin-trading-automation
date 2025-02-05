@@ -81,3 +81,9 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+
+  healthcheck-batch:
+    build:
+      context: ../../
+      dockerfile: docker/prod/Dockerfile.Healthcheck
+    command: ./healthcheck -toml toml/prod.toml -env env/.env.prod
