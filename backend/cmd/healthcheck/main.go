@@ -24,7 +24,8 @@ const (
 
 	SlackChannel = "#bitcoin-trading-log"
 
-	HealthCheckInterval = 2 * time.Hour
+	HealthCheckInterval  = 2 * time.Hour
+	FirstHealthCheckTime = 15 * time.Second
 )
 
 // go run cmd/healthcheck/main.go -toml toml/local.toml -env env/.env.local
@@ -35,6 +36,11 @@ func main() {
 
 	api := api.NewAPI(config.NewConfig(*tomlFilePath, *envFilePath))
 
+	time.Sleep(FirstHealthCheckTime)
+	log.Println("Start Health Check")
+	runHealthChecks(api)
+	log.Println("End Health Check")
+
 	ticker := time.NewTicker(HealthCheckInterval)
 
 	// テスト用のticker
@@ -43,13 +49,17 @@ func main() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		result := healthCheckServers(api)
+		runHealthChecks(api)
+	}
+}
 
-		resultStr := resultToString(result)
+func runHealthChecks(api *api.API) {
+	result := healthCheckServers(api)
 
-		if err := api.SlackNotificationPostMessage(models.SlackNotificationPostMessage{Text: resultStr, Channel: SlackChannel}); err != nil {
-			log.Printf("Failed to post message to Slack: %v", err)
-		}
+	resultStr := resultToString(result)
+
+	if err := api.SlackNotificationPostMessage(models.SlackNotificationPostMessage{Text: resultStr, Channel: SlackChannel}); err != nil {
+		log.Printf("Failed to post message to Slack: %v", err)
 	}
 }
 
