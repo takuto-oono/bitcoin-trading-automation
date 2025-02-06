@@ -49,7 +49,9 @@ func main() {
 	defer ticker.Stop()
 
 	for range ticker.C {
+		log.Println("Start Health Check")
 		runHealthChecks(api)
+		log.Println("End Health Check")
 	}
 }
 
@@ -57,6 +59,7 @@ func runHealthChecks(api *api.API) {
 	result := healthCheckServers(api)
 
 	resultStr := resultToString(result)
+	log.Printf("Health Check Result: %s", resultStr)
 
 	if err := api.SlackNotificationPostMessage(models.SlackNotificationPostMessage{Text: resultStr, Channel: SlackChannel}); err != nil {
 		log.Printf("Failed to post message to Slack: %v", err)
@@ -82,16 +85,21 @@ func healthCheckServers(api *api.API) map[string]string {
 
 	for _, hc := range healthChecks {
 		go func(name string, fn func() error) {
+			log.Printf("Health Check: %s", name)
+
 			defer wg.Done()
 			s := status(fn() != nil)
+			log.Printf("Health Check: %s, Status: %s", name, s)
 
 			mu.Lock()
 			results[name] = s
 			mu.Unlock()
+			log.Printf("Set Health Check: %s, Status: %s", name, s)
 		}(hc.name, hc.fn)
 	}
 
 	wg.Wait()
+	log.Printf("Health Check: %v", results)
 	return results
 }
 
