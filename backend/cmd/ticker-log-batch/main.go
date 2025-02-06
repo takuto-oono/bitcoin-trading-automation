@@ -20,7 +20,7 @@ func main() {
 	cfg := config.NewConfig(*tomlFilePath, *envFilePath)
 	api := api.NewAPI(cfg)
 
-	c := make(chan models.Ticket)
+	c := make(chan models.Ticker)
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -38,7 +38,7 @@ func main() {
 	wg.Wait()
 }
 
-func getTicker(api *api.API, c chan models.Ticket) {
+func getTicker(api *api.API, c chan models.Ticker) {
 	for {
 		ticker, err := api.GetTicker()
 		if err != nil {
@@ -52,7 +52,7 @@ func getTicker(api *api.API, c chan models.Ticket) {
 	}
 }
 
-func postTicker(api *api.API, c chan models.Ticket) {
+func postTicker(api *api.API, c chan models.Ticker) {
 	for {
 		ticker := <-c
 		if err := api.TickerLogPostTicker(ticker); err != nil {

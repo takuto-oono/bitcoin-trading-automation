@@ -15,7 +15,7 @@ func (api *API) TickerLogHealthCheck() error {
 	return api.Do(http.MethodGet, nil, nil, url, nil)
 }
 
-func (api *API) TickerLogPostTicker(ticker models.Ticket) error {
+func (api *API) TickerLogPostTicker(ticker models.Ticker) error {
 	url, err := TickerLogServer(api.Config.Url.TickerLogServer).PostTickerLog()
 	if err != nil {
 		return err

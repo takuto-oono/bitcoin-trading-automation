@@ -11,7 +11,7 @@ type Board struct {
 	Asks     []Order `json:"asks"`
 }
 
-type Ticket struct {
+type Ticker struct {
 	ProductCode     string  `json:"product_code"`
 	State           string  `json:"state"`
 	Timestamp       string  `json:"timestamp"`
@@ -60,9 +60,9 @@ type Balance struct {
 type Collateral struct {
 	Collateral        float64 `json:"collateral"`
 	OpenPositionPnl   float64 `json:"open_position_pnl"`
-	RequireCollateral float64     `json:"require_collateral"`
+	RequireCollateral float64 `json:"require_collateral"`
 	KeepRate          float64 `json:"keep_rate"`
-	MarginCallAmount  float64     `json:"margin_call_amount"`
+	MarginCallAmount  float64 `json:"margin_call_amount"`
 	MarginCallDueDate string  `json:"margin_call_due_date"`
 }
 

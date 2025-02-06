@@ -161,7 +161,7 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 		MYSQL  mysql.MYSQL
 	}
 	type args struct {
-		ticker models.Ticket
+		ticker models.Ticker
 	}
 	tests := []struct {
 		name           string
@@ -183,7 +183,7 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 				}(),
 			},
 			args: args{
-				ticker: models.Ticket{
+				ticker: models.Ticker{
 					TickID:          rand.Int(),
 					ProductCode:     "BTC_JPY",
 					State:           "RUNNING",
@@ -217,7 +217,7 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 				}(),
 			},
 			args: args{
-				ticker: models.Ticket{
+				ticker: models.Ticker{
 					TickID:          rand.Int(),
 					ProductCode:     "BTC_JPY",
 					State:           "RUNNING",

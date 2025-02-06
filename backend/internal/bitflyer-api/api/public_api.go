@@ -10,7 +10,7 @@ import (
 
 type PublicAPI interface {
 	GetBoard(productCode string) (models.Board, error)
-	GetTicker(productCode string) (models.Ticket, error)
+	GetTicker(productCode string) (models.Ticker, error)
 	GetExecutions(productCode string, count, before, after string) ([]models.Execution, error)
 	GetBoardState(productCode string) (models.BoardStatus, error)
 	GetHealth(productCode string) (models.Health, error)
@@ -42,14 +42,14 @@ func (bitAPI BitFlyerAPI) GetBoard(productCode string) (models.Board, error) {
 	return resModel, nil
 }
 
-func (bitAPI BitFlyerAPI) GetTicker(productCode string) (models.Ticket, error) {
+func (bitAPI BitFlyerAPI) GetTicker(productCode string) (models.Ticker, error) {
 	url, err := bitAPI.BaseUrl.GetTickerUrl(productCode)
 	if err != nil {
-		return models.Ticket{}, err
+		return models.Ticker{}, err
 	}
-	resModel := models.Ticket{}
+	resModel := models.Ticker{}
 	if err := bitAPI.API.Do(http.MethodGet, nil, &resModel, url, nil); err != nil {
-		return models.Ticket{}, err
+		return models.Ticker{}, err
 	}
 	return resModel, nil
 }

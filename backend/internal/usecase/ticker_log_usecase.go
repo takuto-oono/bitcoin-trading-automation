@@ -18,7 +18,7 @@ type TickerLog struct {
 type ITickerLog interface {
 	GetTickerLogs() ([]mysql.Ticker, int, error)
 	GetTickerLogByTickID(tickerID int) (*mysql.Ticker, int, error)
-	PostTickerLog(ticker models.Ticket) (int, error)
+	PostTickerLog(ticker models.Ticker) (int, error)
 }
 
 func NewTickerLog(cfg config.Config) (ITickerLog, error) {
@@ -54,7 +54,7 @@ func (t *TickerLog) GetTickerLogByTickID(tickerID int) (*mysql.Ticker, int, erro
 	return ticker, http.StatusOK, nil
 }
 
-func (t *TickerLog) PostTickerLog(ticker models.Ticket) (int, error) {
+func (t *TickerLog) PostTickerLog(ticker models.Ticker) (int, error) {
 	timestamp, err := parseTimestamp(ticker.Timestamp)
 	if err != nil {
 		return http.StatusBadRequest, err

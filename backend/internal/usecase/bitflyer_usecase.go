@@ -37,7 +37,7 @@ const (
 type IBitflyerUseCase interface {
 	// public API
 	GetBoard(productCode string) (models.Board, int, error)
-	GetTicker(productCode string) (models.Ticket, int, error)
+	GetTicker(productCode string) (models.Ticker, int, error)
 	GetExecutions(productCode, count, before, after string) ([]models.Execution, int, error)
 	GetBoardState(productCode string) (models.BoardStatus, int, error)
 	GetHealth(productCode string) (models.Health, int, error)
@@ -80,17 +80,17 @@ func (bu *BitflyerUseCase) GetBoard(productCode string) (models.Board, int, erro
 	return boards, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetTicker(productCode string) (models.Ticket, int, error) {
+func (bu *BitflyerUseCase) GetTicker(productCode string) (models.Ticker, int, error) {
 	if productCode == "" {
 		productCode = ProductCodeBTCJPY
 	}
 	if !validateProductCode(productCode) {
-		return models.Ticket{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
+		return models.Ticker{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
 	}
 
 	ticker, err := bu.PublicAPI.GetTicker(productCode)
 	if err != nil {
-		return models.Ticket{}, http.StatusInternalServerError, err
+		return models.Ticker{}, http.StatusInternalServerError, err
 	}
 
 	return ticker, http.StatusOK, nil

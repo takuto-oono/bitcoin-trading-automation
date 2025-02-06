@@ -15,15 +15,15 @@ func (api *API) BitFlyerAPIHealthCheck() error {
 	return api.Do(http.MethodGet, nil, nil, url, nil)
 }
 
-func (api *API) GetTicker() (models.Ticket, error) {
+func (api *API) GetTicker() (models.Ticker, error) {
 	url, err := BitFlyerAPI(api.Config.Url.BitFlyerAPI).GetTicker()
 	if err != nil {
-		return models.Ticket{}, err
+		return models.Ticker{}, err
 	}
 
-	var ticker models.Ticket
+	var ticker models.Ticker
 	if err := api.Do(http.MethodGet, nil, &ticker, url, nil); err != nil {
-		return models.Ticket{}, err
+		return models.Ticker{}, err
 	}
 
 	return ticker, nil
