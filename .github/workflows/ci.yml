@@ -43,6 +43,24 @@ jobs:
           cd backend
           govulncheck ./...
 
+  go-mod-tidy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23.6'
+
+      - name: Run go mod tidy
+        run: |
+          cd backend
+          go mod tidy
+          git diff --exit-code
+
   build-bitflyer-api:
     runs-on: ubuntu-latest
 
