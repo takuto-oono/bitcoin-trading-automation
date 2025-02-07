@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/models"
 	"github.com/bitcoin-trading-automation/internal/mysql"
 )
 
@@ -184,10 +184,10 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 			},
 			args: args{
 				ticker: models.Ticker{
-					TickID:          rand.Int(),
+					ID:              rand.Int(),
 					ProductCode:     "BTC_JPY",
 					State:           "RUNNING",
-					Timestamp:       "2006-01-02T15:04:05.000",
+					Timestamp:       time.Now().Unix(),
 					BestBid:         1000000,
 					BestAsk:         1000000,
 					BestBidSize:     0.1,
@@ -218,10 +218,10 @@ func TestTickerLog_PostTickerLog(t *testing.T) {
 			},
 			args: args{
 				ticker: models.Ticker{
-					TickID:          rand.Int(),
+					ID:              rand.Int(),
 					ProductCode:     "BTC_JPY",
 					State:           "RUNNING",
-					Timestamp:       "invalid",
+					Timestamp:       -1,
 					BestBid:         1000000,
 					BestAsk:         1000000,
 					BestBidSize:     0.1,

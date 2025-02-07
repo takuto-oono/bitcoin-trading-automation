@@ -58,7 +58,7 @@ func TestMainFunction(t *testing.T) {
 		{
 			name: "post ticker log",
 			args: args{
-				curl: []string{"curl", "-w", "%{http_code}", "-o", "/dev/null", "-s", "-X", "POST", "-H", "Content-Type: application/json", "-d", fmt.Sprintf(`{"tick_id": %v, "product_code": "BTC_JPY", "state": "RUNNING", "timestamp": "2006-01-02T15:04:05.000", "best_bid": 1000000, "best_ask": 1000000, "best_bid_size": 0.1, "best_ask_size": 0.1, "total_bid_depth": 0.1, "total_ask_depth": 0.1, "market_bid_size": 0.1, "market_ask_size": 0.1, "ltp": 1000000, "volume": 1000000, "volume_by_product": 1000000}`, rand.Int()), "http://localhost:8004/ticker-logs"},
+				curl: []string{"curl", "-w", "%{http_code}", "-o", "/dev/null", "-s", "-X", "POST", "-H", "Content-Type: application/json", "-d", fmt.Sprintf(`{"id": %v, "product_code": "BTC_JPY", "state": "RUNNING", "timestamp": 1738687615, "best_bid": 1000000, "best_ask": 1000000, "best_bid_size": 0.1, "best_ask_size": 0.1, "total_bid_depth": 0.1, "total_ask_depth": 0.1, "market_bid_size": 0.1, "market_ask_size": 0.1, "ltp": 1000000, "volume": 1000000, "volume_by_product": 1000000}`, rand.Int()), "http://localhost:8004/ticker-logs"},
 			},
 		},
 	}

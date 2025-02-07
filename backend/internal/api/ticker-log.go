@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
+	"github.com/bitcoin-trading-automation/internal/models"
 )
 
 func (api *API) TickerLogHealthCheck() error {

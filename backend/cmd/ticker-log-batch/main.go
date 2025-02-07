@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/bitcoin-trading-automation/internal/api"
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/models"
 )
 
 // go run cmd/ticker-log-batch/main.go -toml toml/local.toml -env env/.env.local
