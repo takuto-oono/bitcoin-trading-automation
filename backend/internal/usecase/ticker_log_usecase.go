@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/models"
 	"github.com/bitcoin-trading-automation/internal/mysql"
 )
 
@@ -18,7 +18,7 @@ type TickerLog struct {
 type ITickerLog interface {
 	GetTickerLogs() ([]mysql.Ticker, int, error)
 	GetTickerLogByTickID(tickerID int) (*mysql.Ticker, int, error)
-	PostTickerLog(ticker models.Ticket) (int, error)
+	PostTickerLog(ticker models.Ticker) (int, error)
 }
 
 func NewTickerLog(cfg config.Config) (ITickerLog, error) {
@@ -54,17 +54,16 @@ func (t *TickerLog) GetTickerLogByTickID(tickerID int) (*mysql.Ticker, int, erro
 	return ticker, http.StatusOK, nil
 }
 
-func (t *TickerLog) PostTickerLog(ticker models.Ticket) (int, error) {
-	timestamp, err := parseTimestamp(ticker.Timestamp)
-	if err != nil {
-		return http.StatusBadRequest, err
+func (t *TickerLog) PostTickerLog(ticker models.Ticker) (int, error) {
+	if ticker.Timestamp < 0 {
+		return http.StatusBadRequest, errors.New("invalid timestamp")
 	}
 
 	myTicker := mysql.NewTicker(
-		ticker.TickID,
+		ticker.ID,
 		ticker.ProductCode,
 		ticker.State,
-		timestamp,
+		ticker.Timestamp,
 		ticker.BestBid,
 		ticker.BestAsk,
 		ticker.BestBidSize,

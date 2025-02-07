@@ -6,8 +6,9 @@ import (
 	"slices"
 
 	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api"
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
+	apiModels "github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/models"
 )
 
 const (
@@ -36,18 +37,18 @@ const (
 
 type IBitflyerUseCase interface {
 	// public API
-	GetBoard(productCode string) (models.Board, int, error)
-	GetTicker(productCode string) (models.Ticket, int, error)
-	GetExecutions(productCode, count, before, after string) ([]models.Execution, int, error)
-	GetBoardState(productCode string) (models.BoardStatus, int, error)
-	GetHealth(productCode string) (models.Health, int, error)
+	GetBoard(productCode string) (apiModels.Board, int, error)
+	GetTicker(productCode string) (models.Ticker, int, error)
+	GetExecutions(productCode, count, before, after string) ([]apiModels.Execution, int, error)
+	GetBoardState(productCode string) (apiModels.BoardStatus, int, error)
+	GetHealth(productCode string) (apiModels.Health, int, error)
 
 	// private API
-	GetBalance() ([]models.Balance, int, error)
-	GetCollateral() (models.Collateral, int, error)
-	PostSendChildOrder(productCode, ChildOrderType, side string, price int, size float64, MinuteToExpire int, TimeInForce string, isDry bool) (models.ChildOrder, int, error)
+	GetBalance() ([]apiModels.Balance, int, error)
+	GetCollateral() (apiModels.Collateral, int, error)
+	PostSendChildOrder(productCode, ChildOrderType, side string, price int, size float64, MinuteToExpire int, TimeInForce string, isDry bool) (apiModels.ChildOrder, int, error)
 	PostCancelChildOrder(productCode, ChildOrderID string, isDry bool) (int, error)
-	GetChildOrders() ([]models.ChildOrder, int, error)
+	GetChildOrders() ([]apiModels.ChildOrder, int, error)
 }
 
 type BitflyerUseCase struct {
@@ -64,39 +65,46 @@ func NewBitflyerUseCase(cfg config.Config) IBitflyerUseCase {
 	}
 }
 
-func (bu *BitflyerUseCase) GetBoard(productCode string) (models.Board, int, error) {
+func (bu *BitflyerUseCase) GetBoard(productCode string) (apiModels.Board, int, error) {
 	if productCode == "" {
 		productCode = ProductCodeBTCJPY
 	}
 	if !validateProductCode(productCode) {
-		return models.Board{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
+		return apiModels.Board{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
 	}
 
 	boards, err := bu.PublicAPI.GetBoard(productCode)
 	if err != nil {
-		return models.Board{}, http.StatusInternalServerError, err
+		return apiModels.Board{}, http.StatusInternalServerError, err
 	}
 
 	return boards, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetTicker(productCode string) (models.Ticket, int, error) {
+func (bu *BitflyerUseCase) GetTicker(productCode string) (models.Ticker, int, error) {
 	if productCode == "" {
 		productCode = ProductCodeBTCJPY
 	}
 	if !validateProductCode(productCode) {
-		return models.Ticket{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
+		return models.Ticker{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
 	}
 
-	ticker, err := bu.PublicAPI.GetTicker(productCode)
+	t, err := bu.PublicAPI.GetTicker(productCode)
 	if err != nil {
-		return models.Ticket{}, http.StatusInternalServerError, err
+		return models.Ticker{}, http.StatusInternalServerError, err
 	}
+
+	timestamp, err := parseTimestamp(t.Timestamp)
+	if err != nil {
+		return models.Ticker{}, http.StatusInternalServerError, err
+	}
+
+	ticker := models.NewTicker(t.TickID, t.ProductCode, t.State, timestamp, t.BestBid, t.BestAsk, t.BestBidSize, t.BestAskSize, t.TotalBidDepth, t.TotalAskDepth, t.MarketBidSize, t.MarketAskSize, t.Ltp, t.Volume, t.VolumeByProduct)
 
 	return ticker, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetExecutions(productCode, count, before, after string) ([]models.Execution, int, error) {
+func (bu *BitflyerUseCase) GetExecutions(productCode, count, before, after string) ([]apiModels.Execution, int, error) {
 	if productCode == "" {
 		productCode = ProductCodeBTCJPY
 	}
@@ -105,100 +113,100 @@ func (bu *BitflyerUseCase) GetExecutions(productCode, count, before, after strin
 	}
 
 	if !validateProductCode(productCode) {
-		return []models.Execution{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
+		return []apiModels.Execution{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
 	}
 
 	executions, err := bu.PublicAPI.GetExecutions(productCode, count, before, after)
 	if err != nil {
-		return []models.Execution{}, http.StatusInternalServerError, err
+		return []apiModels.Execution{}, http.StatusInternalServerError, err
 	}
 
 	return executions, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetBoardState(productCode string) (models.BoardStatus, int, error) {
+func (bu *BitflyerUseCase) GetBoardState(productCode string) (apiModels.BoardStatus, int, error) {
 	if productCode == "" {
 		productCode = ProductCodeBTCJPY
 	}
 	if !validateProductCode(productCode) {
-		return models.BoardStatus{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
+		return apiModels.BoardStatus{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
 	}
 
 	boardState, err := bu.PublicAPI.GetBoardState(productCode)
 	if err != nil {
-		return models.BoardStatus{}, http.StatusInternalServerError, err
+		return apiModels.BoardStatus{}, http.StatusInternalServerError, err
 	}
 
 	return boardState, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetHealth(productCode string) (models.Health, int, error) {
+func (bu *BitflyerUseCase) GetHealth(productCode string) (apiModels.Health, int, error) {
 	if productCode == "" {
 		productCode = ProductCodeBTCJPY
 	}
 	if !validateProductCode(productCode) {
-		return models.Health{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
+		return apiModels.Health{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
 	}
 
 	health, err := bu.PublicAPI.GetHealth(productCode)
 	if err != nil {
-		return models.Health{}, http.StatusInternalServerError, err
+		return apiModels.Health{}, http.StatusInternalServerError, err
 	}
 
 	return health, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetBalance() ([]models.Balance, int, error) {
+func (bu *BitflyerUseCase) GetBalance() ([]apiModels.Balance, int, error) {
 	balance, err := bu.PrivateAPI.GetBalance()
 	if err != nil {
-		return []models.Balance{}, http.StatusInternalServerError, err
+		return []apiModels.Balance{}, http.StatusInternalServerError, err
 	}
 
 	return balance, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetCollateral() (models.Collateral, int, error) {
+func (bu *BitflyerUseCase) GetCollateral() (apiModels.Collateral, int, error) {
 	collateral, err := bu.PrivateAPI.GetCollateral()
 	if err != nil {
-		return models.Collateral{}, http.StatusInternalServerError, err
+		return apiModels.Collateral{}, http.StatusInternalServerError, err
 	}
 
 	return collateral, http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) PostSendChildOrder(productCode, childOrderType, side string, price int, size float64, minuteToExpire int, timeInForce string, isDry bool) (models.ChildOrder, int, error) {
+func (bu *BitflyerUseCase) PostSendChildOrder(productCode, childOrderType, side string, price int, size float64, minuteToExpire int, timeInForce string, isDry bool) (apiModels.ChildOrder, int, error) {
 	if productCode == "" {
 		productCode = ProductCodeBTCJPY
 	}
 	if !validateProductCode(productCode) {
-		return models.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
+		return apiModels.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid product code: %s", productCode)
 	}
 
 	if childOrderType == "" {
-		return models.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("child order type is required")
+		return apiModels.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("child order type is required")
 	}
 
 	if childOrderType != ChildOrderTypeLimit && childOrderType != ChildOrderTypeMarket {
-		return models.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid child order type: %s", childOrderType)
+		return apiModels.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid child order type: %s", childOrderType)
 	}
 
 	if side == "" {
-		return models.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("side is required")
+		return apiModels.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("side is required")
 	}
 
 	if side != SideBuy && side != SideSell {
-		return models.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid side: %s", side)
+		return apiModels.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid side: %s", side)
 	}
 
 	if timeInForce == "" {
-		return models.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("time in force is required")
+		return apiModels.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("time in force is required")
 	}
 
 	if timeInForce != TimeInForceGTC && timeInForce != TimeInForceIOC && timeInForce != TimeInForceFOK {
-		return models.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid time in force: %s", timeInForce)
+		return apiModels.ChildOrder{}, http.StatusBadRequest, fmt.Errorf("invalid time in force: %s", timeInForce)
 	}
 
-	req := models.SendChildOrderRequest{
+	req := apiModels.SendChildOrderRequest{
 		ProductCode:    productCode,
 		ChildOrderType: childOrderType,
 		Side:           side,
@@ -210,7 +218,7 @@ func (bu *BitflyerUseCase) PostSendChildOrder(productCode, childOrderType, side 
 
 	childOrder, err := bu.PrivateAPI.PostSendChildOrder(req, isDry)
 	if err != nil {
-		return models.ChildOrder{}, http.StatusInternalServerError, err
+		return apiModels.ChildOrder{}, http.StatusInternalServerError, err
 	}
 
 	return childOrder, http.StatusOK, nil
@@ -228,7 +236,7 @@ func (bu *BitflyerUseCase) PostCancelChildOrder(productCode, childOrderID string
 		return http.StatusBadRequest, fmt.Errorf("child order id is required")
 	}
 
-	req := models.CancelChildOrderRequest{
+	req := apiModels.CancelChildOrderRequest{
 		ProductCode:  productCode,
 		ChildOrderID: childOrderID,
 	}
@@ -240,10 +248,10 @@ func (bu *BitflyerUseCase) PostCancelChildOrder(productCode, childOrderID string
 	return http.StatusOK, nil
 }
 
-func (bu *BitflyerUseCase) GetChildOrders() ([]models.ChildOrder, int, error) {
+func (bu *BitflyerUseCase) GetChildOrders() ([]apiModels.ChildOrder, int, error) {
 	childOrders, err := bu.PrivateAPI.GetChildOrders()
 	if err != nil {
-		return []models.ChildOrder{}, http.StatusInternalServerError, err
+		return []apiModels.ChildOrder{}, http.StatusInternalServerError, err
 	}
 
 	return childOrders, http.StatusOK, nil

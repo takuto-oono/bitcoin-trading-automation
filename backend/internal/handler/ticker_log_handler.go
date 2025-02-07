@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bitcoin-trading-automation/internal/bitflyer-api/api/models"
 	"github.com/bitcoin-trading-automation/internal/config"
+	"github.com/bitcoin-trading-automation/internal/models"
 	"github.com/bitcoin-trading-automation/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -61,7 +61,7 @@ func (h *TickerLogHandler) GetTickerLogByTickID(ctx *gin.Context) {
 }
 
 func (h *TickerLogHandler) PostTickerLog(ctx *gin.Context) {
-	var ticker models.Ticket
+	var ticker models.Ticker
 	if err := ctx.BindJSON(&ticker); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
