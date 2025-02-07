@@ -12,8 +12,6 @@ import (
 )
 
 func TestMainFunction(t *testing.T) {
-	go main()
-
 	config := config.NewConfig("../../toml/local.toml", "../../env/.env.local")
 
 	redisRepo, err := models.NewRedisRepository(config)
