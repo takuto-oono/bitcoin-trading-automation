@@ -13,9 +13,6 @@ import (
 )
 
 func TestMainFunction(t *testing.T) {
-	go main()
-	time.Sleep(3 * time.Second)
-
 	cfg := config.NewConfig("../../toml/local.toml", "../../env/.env.local")
 
 	m, err := mysql.NewMYSQL(cfg)

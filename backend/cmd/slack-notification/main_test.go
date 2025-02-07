@@ -8,9 +8,6 @@ import (
 )
 
 func TestMainFunction(t *testing.T) {
-	// main関数をゴルーチンで実行
-	go main()
-
 	type args struct {
 		curl []string
 	}

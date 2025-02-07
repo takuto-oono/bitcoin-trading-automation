@@ -131,6 +131,18 @@ jobs:
           echo "BITFLYER_API_SECRET=${{ secrets.BITFLYER_API_SECRET }}" >> backend/env/.env.local
           echo "SLACK_ACCESS_TOKEN=${{ secrets.SLACK_ACCESS_TOKEN }}" >> backend/env/.env.local
 
+      - name: Run Go server
+        run: |
+          cd backend
+          go mod tidy
+          go run cmd/bitflyer-api/main.go -toml toml/local.toml -env env/.env.local &
+          go run cmd/redis-server/main.go -toml toml/local.toml -env env/.env.local &
+          go run cmd/slack-notification/main.go -toml toml/local.toml -env env/.env.local &
+          go run cmd/ticker-log-server/main.go -toml toml/local.toml -env env/.env.local &
+          go run cmd/healthcheck/main.go -toml toml/local.toml -env env/.env.local &
+          go run cmd/ticker-log-batch/main.go -toml toml/local.toml -env env/.env.local &
+          sleep 3
+
       - name: Run Go tests
         run: |
           cd backend
