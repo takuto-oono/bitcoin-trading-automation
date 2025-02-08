@@ -64,8 +64,6 @@ func TestMainFunction(t *testing.T) {
 		},
 	}
 
-	time.Sleep(1 * time.Second)
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// curlコマンドを実行
