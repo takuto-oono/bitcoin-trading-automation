@@ -57,7 +57,6 @@ func postTicker(api *api.API, c chan models.Ticker) {
 		ticker := <-c
 		if err := api.TickerLogPostTicker(ticker); err != nil {
 			log.Printf("Failed to post ticker: %v, ticker: %v", err, ticker)
-			c <- ticker
 		}
 		log.Printf("Success to post ticker: %v", ticker)
 	}
