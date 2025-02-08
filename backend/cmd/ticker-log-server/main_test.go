@@ -60,9 +60,6 @@ func TestMainFunction(t *testing.T) {
 		},
 	}
 
-	// サーバーが起動するのを待つ
-	time.Sleep(1 * time.Second)
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// curlコマンドを実行

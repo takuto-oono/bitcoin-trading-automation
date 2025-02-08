@@ -4,7 +4,6 @@ import (
 	"os/exec"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestMainFunction(t *testing.T) {
@@ -29,9 +28,6 @@ func TestMainFunction(t *testing.T) {
 			},
 		},
 	}
-
-	// サーバーが起動するのを待つ
-	time.Sleep(3 * time.Second)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
